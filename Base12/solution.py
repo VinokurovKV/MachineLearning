@@ -26,10 +26,10 @@ def silhouette_score(x, labels):
 
         order = np.argsort(inverse_labels)
         sorted_labels = inverse_labels[order]
-        cluster_starts = np.r_[
-            0,
+        cluster_starts = np.concatenate((
+            np.array([0]),
             np.flatnonzero(np.diff(sorted_labels)) + 1
-        ]
+        ))
 
         cluster_distances_sum = np.add.reduceat(
             distances[:, order],
@@ -56,14 +56,14 @@ def silhouette_score(x, labels):
 
         denominator = np.maximum(compactness, separation)
         silhouettes = np.divide(
-        separation - compactness,
-        denominator,
-        out=np.zeros(n_objects, dtype=float),
-        where=denominator != 0
-    )
-    silhouettes[cluster_sizes[inverse_labels] == 1] = 0.0
+            separation - compactness,
+            denominator,
+            out=np.zeros(n_objects, dtype=float),
+            where=denominator != 0
+        )
+        silhouettes[cluster_sizes[inverse_labels] == 1] = 0.0
 
-    sil_score = float(np.mean(silhouettes))
+        sil_score = float(np.mean(silhouettes))
 
     return sil_score
 
